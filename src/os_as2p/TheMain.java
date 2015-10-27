@@ -46,17 +46,23 @@ public class TheMain {
 	 * This method creates the processes to be run on the processor.
 	 */
 	public static void createProcesses() {
-		Random rand = new Random();
 		
+		Random rand = new Random();
 		myProcessAmount = rand.nextInt(60) + 100;
 		
-		for (int i = 0; i < LEVELS; i++) {
-			System.out.println(myList[i]);
+		for (int i = 0; i < LEVELS; i++) { //initialize all levels
+			myList[i] = new PriorityList();
 		}
 		
-		for (int i = 0; i < 7; i ++) { //create priority 1 and priority 2 processes.
-			
+		for (int i = 0; i < LEVELS ; i ++) { //create priority 1 and priority 2 processes.
+			myList[i].enqueue(new Process(i));
 		}
+		
+		//create many level 2 processes
+		//some of these processes will randomly be "niced" and dropped to lower priority.
+		
+		
+		
 		
 		
 	}

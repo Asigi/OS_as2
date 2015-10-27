@@ -12,17 +12,17 @@ public class PriorityList {
 	/**
 	 * Points to the first node.
 	 */
-	private ProcessNode front;
+	protected ProcessNode front;
 	
 	/**
 	 * Points to the last node.
 	 */
-	private ProcessNode back;
+	protected ProcessNode back;
 	
 	/**
 	 * number of items in the list.
 	 */
-	private int count;
+	protected int count;
 	
 	
 	
@@ -135,8 +135,8 @@ public class PriorityList {
 	 */
 	protected class ProcessNode {
 		
-		private Process data;
-		private ProcessNode next;
+		protected Process data;
+		protected ProcessNode next;
 		
 		public ProcessNode(Process theProcess) {
 			
