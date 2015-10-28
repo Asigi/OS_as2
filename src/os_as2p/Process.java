@@ -11,6 +11,13 @@ public class Process {
 	 */
 	private int myNumber;
 	
+	
+	/**
+	 * How much more time this process will need on the processor to finish.
+	 */
+	private int myRemainingTime;
+	
+	
 	/**
 	 * The creation time in milliseconds (since start of Jan 1, 1970).
 	 */
@@ -19,7 +26,8 @@ public class Process {
 	
 	/**
 	 * This represents the time (in milliseconds) for when this process was removed
-	 * from the processor.
+	 * from the processor. This field is used to figure out whether this process 
+	 * is starving or not.
 	 */
 	private long myRunFinishTime;
 	
@@ -31,12 +39,13 @@ public class Process {
 	 * Constructor
 	 * @param theNum is the id number of the process.
 	 */
-	public Process(int theNum) {
+	public Process(int theNum, int runTime) {
 		
 		myNumber = theNum;
+		myRemainingTime = runTime;
+		
 		Date adate = new Date();
 		myCreateDate = adate.getTime();
-		
 	}
 	
 	
