@@ -21,7 +21,7 @@ public class TheMain {
 	/**
 	 * The number of levels.
 	 */
-	private static final int LEVELS = 6;
+	private static final int LEVELS = 10;
 	
 	/**
 	 * The amount of time that each process gets on the processor before being
@@ -53,6 +53,8 @@ public class TheMain {
 	public static void main(String[] args) {
 		
 		createProcesses();
+		printProcesses();
+		
 		
 		Timer timer = new Timer();
 		TimerTask taskToExecute = new Processor();
@@ -104,11 +106,35 @@ public class TheMain {
 			Process process = new Process(i, 20 + rand.nextInt(220));
 			
 			int nicerRand = rand.nextInt(10); //helps decide if a process should be "niced".
-			if (nicerRand < 7) { //most processes will go to priority 2.
+			if (nicerRand < 3) { //most processes will go to priority 2.
 				myList[2].enqueue(process);  
 			} else { //a few processes will go into the lower levels.
 				nicerRand = 3 + rand.nextInt(LEVELS - 3); //priority levels 3 through one number less than (the total levels minus 3).
 				myList[nicerRand].enqueue(process); 
+			}
+		}
+	}
+	
+	
+	/**
+	 * Prints all the processes in each of the priorities in myList.
+	 */
+	private static void printProcesses() {
+		
+		for (int i = 0; i < LEVELS; i++) {
+			
+			if (myList[i].count > 0) {
+				System.out.print("Priority " + i + "\t" + "program #: \t");
+				
+				int counter = myList[i].count;
+				
+				while (counter > 0) {
+					System.out.print(myList[i].dequeue().getNumber() + " ");
+					counter --;
+				}
+				
+				System.out.println();
+				
 			}
 		}
 	}
