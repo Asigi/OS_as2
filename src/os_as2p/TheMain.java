@@ -1,6 +1,11 @@
 package os_as2p;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 
 /**
@@ -22,8 +27,13 @@ public class TheMain {
 	 * The amount of time that each process gets on the processor before being
 	 * removed so that the next process can run.
 	 */
-	private static final int TIME_SLICE = 50;
+	private static final int TIME_SLICE = 500;
 	
+	/**
+	 * The amount of time after which the processor will starts.
+	 * In milliseconds.
+	 */
+	private static final int DELAY_TIME = 4000;
 	
 	/**
 	 * The number of processes to be created and run.
@@ -44,16 +54,22 @@ public class TheMain {
 		
 		createProcesses();
 		
-		handleProcesses();
+		Timer timer = new Timer();
+		TimerTask taskToExecute = new Processor();
+		timer.scheduleAtFixedRate(taskToExecute, DELAY_TIME, TIME_SLICE);
+		
+		//myTimeKeeper //= new Timer(TIME_SLICE, new Processor());
+		//handleProcesses(); //TODO, maybe put a run Timer method here instead? The timer will call handle processes.
 		
 	}
 	
+
 	/**
-	 * This method processes the processes. 
-	 * 
+	 * This gets called by Processor's run method at certain intervals.
 	 */
 	private static void handleProcesses() {
 		
+		System.out.println("handle it");
 		
 		
 		
@@ -96,4 +112,23 @@ public class TheMain {
 			}
 		}
 	}
+	
+	
+	
+	
+	
+	/**
+	 * This class handles the priorities.
+	 * @author arshdeep
+	 *
+	 */
+	private static class Processor extends TimerTask{
+
+		@Override
+		public void run() {
+			handleProcesses();
+		}
+	}
+	
+	
 }
