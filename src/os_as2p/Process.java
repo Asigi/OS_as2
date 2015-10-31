@@ -28,6 +28,8 @@ public class Process {
 	 * This represents the time (in milliseconds) for when this process was removed
 	 * from the processor. This field is used to figure out whether this process 
 	 * is starving or not.
+	 * 
+	 * This value is initialized to the time it is created.
 	 */
 	private long myRunFinishTime;
 	
@@ -46,6 +48,8 @@ public class Process {
 		
 		Date adate = new Date();
 		myCreateDate = adate.getTime();
+		
+		myRunFinishTime = myCreateDate; 
 	}
 	
 	
@@ -84,5 +88,19 @@ public class Process {
 	}
 	
 	
+	/**
+	 * Get the time in milliseconds.
+	 * @return the amount of time more this process needs to finish.
+	 */
+	public int getRemainingTime() {
+		return myRemainingTime;
+	}
+	
+	/**
+	 * Decrement the remaining time by one millisecond.
+	 */
+	public void decrementTime() {
+		myRemainingTime --;
+	}
 
 }

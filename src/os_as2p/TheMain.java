@@ -1,7 +1,5 @@
 package os_as2p;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,6 +28,11 @@ public class TheMain {
 	private static final int TIME_SLICE = 500;
 	
 	/**
+	 * This represents a single millisecond.
+	 */
+	private static final int ONE_MILISEC = 1;
+	
+	/**
 	 * The amount of time after which the processor will starts.
 	 * In milliseconds.
 	 */
@@ -45,6 +48,28 @@ public class TheMain {
 	 */
 	private static PriorityList[] myList = new PriorityList[LEVELS];
 	
+	/**
+	 * The current priority level which contains the process to be processed.
+	 */
+	private static int  currentPrioLvl = 0;
+
+	/**
+	 * The current process that is being worked on.
+	 */
+	private static Process currentProcess;
+	
+	/** 
+	 * Whether or not the current process has finished and a new process needs to be loaded.
+	 */
+	private static boolean curProcFinish = true;
+	
+	/**
+	 * Whether or not all of the processes have been finished.
+	 */
+	private static boolean finished = false;
+
+	
+	
 	
 	/**
 	 * Main method.
@@ -54,30 +79,38 @@ public class TheMain {
 		
 		createProcesses();
 		printProcesses();
-		
-		
-		Timer timer = new Timer();
-		TimerTask taskToExecute = new Processor();
-		timer.scheduleAtFixedRate(taskToExecute, DELAY_TIME, TIME_SLICE);
-		
-		//myTimeKeeper //= new Timer(TIME_SLICE, new Processor());
-		//handleProcesses(); //TODO, maybe put a run Timer method here instead? The timer will call handle processes.
-		
+
+
+		if (myList[0] != null) { //if the list has at least one process on level 0;
+
+			//This first timer task is what reduces the timeRemaining value of the process every millisecond.
+			Timer timer = new Timer();
+			TimerTask taskToExecute = new Processor();
+			timer.scheduleAtFixedRate(taskToExecute, DELAY_TIME, ONE_MILISEC);
+
+			//This second timer is what prints the state of the program every [TIME_SLICE] milliseconds
+			TimerTask taskThatChanges = new Changer();
+			timer.scheduleAtFixedRate(taskThatChanges, DELAY_TIME, TIME_SLICE);
+			
+		}
+
 	}
 	
+
+	
+
 
 	/**
 	 * This gets called by Processor's run method at certain intervals.
 	 */
 	private static void handleProcesses() {
+	
+		currentProcess.decrementTime();
 		
-		System.out.println("handle it");
-		
-		
-		
-		
-		
-		//Timeslices will be used, so decrement the run time of the process.
+		if (currentProcess.getRemainingTime() == 0) {
+			curProcFinish = true;
+		}
+
 	}
 	
 	
@@ -134,10 +167,64 @@ public class TheMain {
 				}
 				
 				System.out.println();
+				System.out.println("-------------------------------------------------------------------------");
 				
 			}
 		}
 	}
+	
+	
+	/**
+	 * This method switches the the process on the processor.
+	 */
+	private static void switchProcesses() {
+		
+		PriorityList plist = myList[currentPrioLvl];
+		
+		
+		//for loop up until the current level to make sure that no starving processes moved up.
+		//if there is a process above the current level, then switch to that level.
+		if (currentPrioLvl != 0) {
+			for (int i = 0; i < currentPrioLvl; i++) {
+				if (myList[i].count > 0) {
+					int oldlvl = currentPrioLvl;
+					
+					currentPrioLvl = i;
+					plist = myList[currentPrioLvl]; 
+					
+					//re-enqueue the current process to its own level if it hasn't finished processing.
+					if (currentProcess.getRemainingTime() > 0) {
+						myList[oldlvl].enqueue(currentProcess);
+					}
+				}
+			}
+		}
+		
+		
+		if (plist.count > 0) { //switch processes if current list has more processes.
+			currentProcess = plist.dequeue();
+			curProcFinish = false;
+		} else { //the current list is empty so move on to the next priority level.
+			
+			if (currentPrioLvl != (LEVELS - 1)) { //if we are not on the final level, go to the next level.
+				currentPrioLvl ++;
+			} else { //we are finished processing
+				finished = true;
+			}
+		}
+
+	}
+	
+	
+	/**
+	 * This removes the currently running process because it has been running too long.
+	 * That process is added to the back of the queue.
+	 */
+	private static void removeHogger() {
+		currentProcess.setRemoveTime();
+		myList[currentPrioLvl].enqueue(currentProcess);	
+	}
+	
 	
 	
 	
@@ -148,13 +235,67 @@ public class TheMain {
 	 * @author arshdeep
 	 *
 	 */
-	private static class Processor extends TimerTask{
+	private static class Processor extends TimerTask {
+		
 
 		@Override
 		public void run() {
-			handleProcesses();
+			if (!finished) { //if we are not done with all the processes.
+				
+				if (!curProcFinish) { //if the current process has not finished.
+					handleProcesses();
+					
+				} else { //if the current process has finished.
+					switchProcesses();
+				}
+				
+			} else { //cancel this run when all finished.
+				this.cancel();
+			}
 		}
 	}
+	
+	
+	
+	
+	/**
+	 * This class handles the changing of priorities after they have reached their maximum time on the processor.
+	 * @author arshdeep
+	 *
+	 */
+	private static class Changer extends TimerTask {
+
+		@Override
+		public void run() {
+			
+			
+			if (!finished) { 
+				
+				//level up any starving processes.
+				for (int i = currentPrioLvl; i < LEVELS; i ++) {
+					if (i > 0) { //can't level up top level processes.
+						Process starver = myList[i].levelUpProcess();
+						
+						if (starver.getNumber() != -1) { //if this isn't the null node process, add it to the higher level list
+							myList[i - 1].enqueue(starver);
+						}
+					}
+				}
+				
+				
+				if (!curProcFinish) { //switch to next process if current one is not finished.
+					//NOTE: if current process is finished, it will be switched out before this Changer class's run is called...
+					//...therefore we do not need to do the change again.
+					
+					removeHogger();
+				}
+				
+			}
+		}
+	}
+	
+	
+	
 	
 	
 }

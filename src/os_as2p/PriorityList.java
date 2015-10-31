@@ -24,8 +24,10 @@ public class PriorityList {
 	 */
 	protected int count;
 	
-	
-	
+	/**
+	 * This represents a null node. The node has a process which has id number -1.
+	 */
+	private ProcessNode nullNode = new ProcessNode(new Process (-1, 1));
 	
 	
 	public PriorityList() {
@@ -68,12 +70,13 @@ public class PriorityList {
 		return ret.data;
 	}
 	
+
 	
 	/**
 	 * This method is used to find the node that contains a starving process.
 	 * @return the node that contains the starving process.
 	 */
-	public ProcessNode levelUpProcess() {
+	public Process levelUpProcess() {
 	
 		ProcessNode previous = null;
 		ProcessNode current = null;
@@ -84,7 +87,7 @@ public class PriorityList {
 			if (checkForStarvation(current)) {
 				front = front.next; //remove the current node that is starving. TODO: what if node is at priority 0?
 				count--;
-				return current;
+				return current.data;
 				
 			} else {
 				while (current.next != null) {
@@ -94,13 +97,13 @@ public class PriorityList {
 					if (checkForStarvation(current)) {
 						previous.next = current.next; //remove the current
 						count--;
-						return current;
+						return current.data;
 					}
 				}
 			}
 		} 
 		
-		return current; //null
+		return nullNode.data; //null
 	}
 	
 	
