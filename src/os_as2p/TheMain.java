@@ -86,11 +86,11 @@ public class TheMain {
 			//This first timer task is what reduces the timeRemaining value of the process every millisecond.
 			Timer timer = new Timer();
 			TimerTask taskToExecute = new Processor();
-			timer.scheduleAtFixedRate(taskToExecute, DELAY_TIME, ONE_MILISEC);
+			timer.scheduleAtFixedRate(taskToExecute, 0, ONE_MILISEC);
 
 			//This second timer is what prints the state of the program every [TIME_SLICE] milliseconds
 			TimerTask taskThatChanges = new Changer();
-			timer.scheduleAtFixedRate(taskThatChanges, DELAY_TIME, TIME_SLICE);
+			timer.scheduleAtFixedRate(taskThatChanges, 0, TIME_SLICE);
 			
 		}
 
@@ -156,21 +156,42 @@ public class TheMain {
 		
 		for (int i = 0; i < LEVELS; i++) {
 			
+			
+			
+			
+			
+			//TODO CREATE A TOSTRING METHOD WITHIN PRIORITYLIST THAT RETURNS THE VALUE OF EVERYTHING IN THAT LIST
+			
+			
+			
+			
+			
+			
+			
+			
 			if (myList[i].count > 0) {
 				System.out.print("Priority " + i + "\t" + "program #: \t");
 				
 				int counter = myList[i].count;
 				
 				while (counter > 0) {
-					System.out.print(myList[i].dequeue().getNumber() + " ");
+					Process proc = myList[i].dequeue();
+					System.out.print(proc.getNumber() + " ");
 					counter --;
+					myList[i].enqueue(proc); //put this process back in the list.
 				}
 				
 				System.out.println();
-				System.out.println("-------------------------------------------------------------------------");
-				
+				if (i != LEVELS - 1) {
+					System.out.println("-------------------------------------------------------------------------");
+				}
 			}
 		}
+		
+		System.out.println();
+		System.out.println("=========================================================================================================================================");
+		//System.out.println("=========================================================================================================================================");
+		System.out.println();
 	}
 	
 	
@@ -200,8 +221,9 @@ public class TheMain {
 			}
 		}
 		
-		
+		System.out.println("plist count is " + plist.count);
 		if (plist.count > 0) { //switch processes if current list has more processes.
+			System.out.println("plist count over 0. count is" + plist.count);
 			currentProcess = plist.dequeue();
 			curProcFinish = false;
 		} else { //the current list is empty so move on to the next priority level.
@@ -240,10 +262,15 @@ public class TheMain {
 
 		@Override
 		public void run() {
+			//System.out.println("running priority: " + currentPrioLvl);
+			//System.out.println("curProcFinish is " + curProcFinish);
 			if (!finished) { //if we are not done with all the processes.
+				
+				//System.out.println("Not finished");
 				
 				if (!curProcFinish) { //if the current process has not finished.
 					handleProcesses();
+					//printProcesses();
 					
 				} else { //if the current process has finished.
 					switchProcesses();
@@ -290,7 +317,17 @@ public class TheMain {
 					removeHogger();
 				}
 				
+				printProcesses();
+				
+				
+			} else {
+				
+				printProcesses();
+				System.out.println("All Finished!");
+				this.cancel();
+				
 			}
+			
 		}
 	}
 	
