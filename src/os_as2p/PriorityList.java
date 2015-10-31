@@ -70,6 +70,31 @@ public class PriorityList {
 		return ret.data;
 	}
 	
+	
+	public String toString() {
+		
+		String s = "";
+		
+		if (count > 0) {
+			ProcessNode current = front;
+			
+			s += current.data.getNumber() + " ";
+			//s += " (TtR: " + current.data.getRemainingTime() + ", S: " + current.data.getStarveTime(new Date()) + ") ";
+			
+			
+			while (current.next != null) {
+				current = current.getNext();
+				
+				s += current.data.getNumber() + " ";
+				//s += " (TtR: " + current.data.getRemainingTime() + ", S: " + current.data.getStarveTime(new Date()) + ") ";
+				
+			}
+		}
+		
+		return s;
+		
+	}
+	
 
 	
 	/**
@@ -138,8 +163,8 @@ public class PriorityList {
 	 */
 	protected class ProcessNode {
 		
-		protected Process data;
-		protected ProcessNode next;
+		private Process data;
+		private ProcessNode next;
 		
 		public ProcessNode(Process theProcess) {
 			

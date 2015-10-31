@@ -25,7 +25,7 @@ public class TheMain {
 	 * The amount of time that each process gets on the processor before being
 	 * removed so that the next process can run.
 	 */
-	private static final int TIME_SLICE = 500;
+	private static final int TIME_SLICE = 50;
 	
 	/**
 	 * This represents a single millisecond.
@@ -69,7 +69,10 @@ public class TheMain {
 	private static boolean finished = false;
 
 	
-	
+	/**
+	 * The number of runs that have been made.
+	 */
+	private static int runs = 0;
 	
 	/**
 	 * Main method.
@@ -78,7 +81,7 @@ public class TheMain {
 	public static void main(String[] args) {
 		
 		createProcesses();
-		printProcesses();
+		//printProcesses();
 
 
 		if (myList[0] != null) { //if the list has at least one process on level 0;
@@ -156,22 +159,12 @@ public class TheMain {
 		
 		for (int i = 0; i < LEVELS; i++) {
 			
-			
-			
-			
-			
-			//TODO CREATE A TOSTRING METHOD WITHIN PRIORITYLIST THAT RETURNS THE VALUE OF EVERYTHING IN THAT LIST
-			
-			
-			
-			
-			
-			
-			
-			
 			if (myList[i].count > 0) {
 				System.out.print("Priority " + i + "\t" + "program #: \t");
 				
+				System.out.print(myList[i].toString());
+				
+				/*
 				int counter = myList[i].count;
 				
 				while (counter > 0) {
@@ -180,6 +173,7 @@ public class TheMain {
 					counter --;
 					myList[i].enqueue(proc); //put this process back in the list.
 				}
+				*/
 				
 				System.out.println();
 				if (i != LEVELS - 1) {
@@ -200,8 +194,9 @@ public class TheMain {
 	 */
 	private static void switchProcesses() {
 		
-		PriorityList plist = myList[currentPrioLvl];
+		printProcesses();
 		
+		PriorityList plist = myList[currentPrioLvl];
 		
 		//for loop up until the current level to make sure that no starving processes moved up.
 		//if there is a process above the current level, then switch to that level.
@@ -221,9 +216,9 @@ public class TheMain {
 			}
 		}
 		
-		System.out.println("plist count is " + plist.count);
+		//System.out.println("plist count is " + plist.count);
 		if (plist.count > 0) { //switch processes if current list has more processes.
-			System.out.println("plist count over 0. count is" + plist.count);
+			//System.out.println("plist count over 0. count is" + plist.count);
 			currentProcess = plist.dequeue();
 			curProcFinish = false;
 		} else { //the current list is empty so move on to the next priority level.
@@ -243,8 +238,10 @@ public class TheMain {
 	 * That process is added to the back of the queue.
 	 */
 	private static void removeHogger() {
+		//System.out.println("In hogger");
 		currentProcess.setRemoveTime();
 		myList[currentPrioLvl].enqueue(currentProcess);	
+		switchProcesses();
 	}
 	
 	
@@ -270,7 +267,7 @@ public class TheMain {
 				
 				if (!curProcFinish) { //if the current process has not finished.
 					handleProcesses();
-					//printProcesses();
+					
 					
 				} else { //if the current process has finished.
 					switchProcesses();
@@ -298,12 +295,14 @@ public class TheMain {
 			
 			if (!finished) { 
 				
+				
 				//level up any starving processes.
 				for (int i = currentPrioLvl; i < LEVELS; i ++) {
 					if (i > 0) { //can't level up top level processes.
 						Process starver = myList[i].levelUpProcess();
 						
 						if (starver.getNumber() != -1) { //if this isn't the null node process, add it to the higher level list
+							starver.setRemoveTime();
 							myList[i - 1].enqueue(starver);
 						}
 					}
@@ -317,12 +316,12 @@ public class TheMain {
 					removeHogger();
 				}
 				
-				printProcesses();
+				
 				
 				
 			} else {
 				
-				printProcesses();
+				//printProcesses();
 				System.out.println("All Finished!");
 				this.cancel();
 				

@@ -65,6 +65,8 @@ public class Process {
 	
 	/**
 	 * This sets the time for when this process was removed from the processor.
+	 * OR 
+	 * This could be called for resetting the time for when this process was moved up a level.
 	 */
 	public void setRemoveTime() {
 		
