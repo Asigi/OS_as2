@@ -1,3 +1,16 @@
+
+
+
+//Arshdeep Singh
+//Roman 
+
+//Assignment 2 Processes
+
+
+
+
+
+
 package os_as2p;
 
 import java.util.Date;
@@ -110,7 +123,7 @@ public class PriorityList {
 			current = front;
 			
 			if (checkForStarvation(current)) {
-				front = front.next; //remove the current node that is starving. TODO: what if node is at priority 0?
+				front = front.next; 
 				count--;
 				return current.data;
 				

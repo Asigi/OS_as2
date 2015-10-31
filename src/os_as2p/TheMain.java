@@ -1,3 +1,15 @@
+
+
+//Arshdeep Singh
+//Roman 
+
+//Assignment 2 Processes
+
+
+
+
+
+
 package os_as2p;
 
 import java.util.Random;
@@ -19,7 +31,7 @@ public class TheMain {
 	/**
 	 * The number of levels.
 	 */
-	private static final int LEVELS = 10;
+	private static final int LEVELS = 12;
 	
 	/**
 	 * The amount of time that each process gets on the processor before being
@@ -70,30 +82,33 @@ public class TheMain {
 
 	
 	/**
-	 * The number of runs that have been made.
-	 */
-	private static int runs = 0;
-	
-	/**
 	 * Main method.
 	 * @param args stuff
 	 */
 	public static void main(String[] args) {
 		
 		createProcesses();
-		//printProcesses();
+		printProcesses();
+		
+	
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println("Beginning processing after short delay...");
+		System.out.println();
+		System.out.println();
 
-
+		
 		if (myList[0] != null) { //if the list has at least one process on level 0;
 
 			//This first timer task is what reduces the timeRemaining value of the process every millisecond.
 			Timer timer = new Timer();
 			TimerTask taskToExecute = new Processor();
-			timer.scheduleAtFixedRate(taskToExecute, 0, ONE_MILISEC);
+			timer.scheduleAtFixedRate(taskToExecute, DELAY_TIME, ONE_MILISEC);
 
 			//This second timer is what prints the state of the program every [TIME_SLICE] milliseconds
 			TimerTask taskThatChanges = new Changer();
-			timer.scheduleAtFixedRate(taskThatChanges, 0, TIME_SLICE);
+			timer.scheduleAtFixedRate(taskThatChanges, DELAY_TIME, TIME_SLICE);
 			
 		}
 
@@ -216,14 +231,15 @@ public class TheMain {
 			}
 		}
 		
-		//System.out.println("plist count is " + plist.count);
+		
 		if (plist.count > 0) { //switch processes if current list has more processes.
-			//System.out.println("plist count over 0. count is" + plist.count);
+			
 			currentProcess = plist.dequeue();
 			curProcFinish = false;
 		} else { //the current list is empty so move on to the next priority level.
 			
 			if (currentPrioLvl != (LEVELS - 1)) { //if we are not on the final level, go to the next level.
+				
 				currentPrioLvl ++;
 			} else { //we are finished processing
 				finished = true;
@@ -238,7 +254,7 @@ public class TheMain {
 	 * That process is added to the back of the queue.
 	 */
 	private static void removeHogger() {
-		//System.out.println("In hogger");
+		
 		currentProcess.setRemoveTime();
 		myList[currentPrioLvl].enqueue(currentProcess);	
 		switchProcesses();
